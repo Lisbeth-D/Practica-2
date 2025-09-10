@@ -3,7 +3,7 @@
 ## Descripción
 Esta práctica consiste en una API REST construida con Express y Prisma sobre SQLite, que permite gestionar clientes y pedidos.
 Cada pedido incluye datos de cliente, estado, monto y descripción del producto o servicio adquirido. 
----
+
 ## Tecnologías
 - Node.js
 - Express 5
