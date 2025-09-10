@@ -1,87 +1,98 @@
-# API REST – CRUD de Productos (AutoZone)
+# API REST CRUD de Pedidos y Clientes
 
 ## Descripción
-Este proyecto implementa una **API REST** en **Node.js + Express** para gestionar productos de **AutoZone**.  
-Incluye:
-
-- Validaciones con **Zod**  
-- Manejo de errores estandarizados  
-- Paginación y ordenamiento básico  
+Esta práctica consiste en una API REST construida con Express y Prisma sobre SQLite, que permite gestionar clientes y pedidos.
+Cada pedido incluye datos de cliente, estado, monto y descripción del producto o servicio adquirido. 
 ---
-
+## Tecnologías
+- Node.js
+- Express 5
+- Prisma ORM
+- SQLite
+- Dotenv
 ## Estructura del proyecto
-practica1-crud/
-├─ src/
-│ ├─ controllers/
-│ │ └─ productos.js
-│ ├─ models/
-│ │ └─ productos.js
-│ ├─ routes/
-│ │ └─ productos.js
-│ ├─ services/
-│ │ └─ productos.js
-│ └─ index.js
+practica2-bdd/
+│
+├─ prisma/
+│   ├─ schema.prisma      # Definición de modelos y base de datos
+│   └─ seed.js            # Datos iniciales para poblar la BD
+│
+├─ routes/
+│   └─ pedidos.js         # Rutas de pedidos
+│
+├─ controllers/
+│   └─ pedidosController.js  # Lógica de consultas y filtros
+│
+├─ server.js              # Configuración de Express
 ├─ package.json
-└─ README.md
+└─ .env                   # Variables de entorno
 
----
+## Cliente
+| Campo    | Tipo   | Notas               |
+| -------- | ------ | ------------------- |
+| id       | Int    | Autoincremental, PK |
+| nombre   | String | Nombre completo     |
+| email    | String | Único               |
+| telefono | String | Opcional            |
+
+## Pedido 
+| Campo       | Tipo     | Notas                                 |
+| ----------- | -------- | ------------------------------------- |
+| id          | Int      | Autoincremental, PK                   |
+| fecha       | DateTime | Fecha de creación (UTC)               |
+| estado      | String   | Pendiente / Completado                |
+| monto       | Float    | Monto del pedido                      |
+| descripcion | String   | Descripción del pedido (ej. “Aceite”) |
+| clienteId   | Int      | FK al cliente                         |
 
 ## Instalación
 
 1. Clonar repositorio:
-   ```bash
-   git clone <URL_DEL_REPO>
-   cd practica1-crud
+git clone https://github.com/Lisbeth-D/Practica-2.git
+cd practica2-bdd
 
 2. Instalar dependencias:
 npm install
-3. Ejecutar en modo desarrollo:
-npm run dev
+3. Crear archivo .env con:
+DATABASE_URL="file:./dev.db"
 
+## Prisma
+1. Generar cliente Prisma:
+npx prisma generate
+
+2. Aplicar migraciones:
+npx prisma migrate dev --name init
+
+3. Poblar la base de datos (seed):
+npx prisma db seed
+
+4. Visualizar datos:
+npx prisma studio
+
+
+## 
+| Script                   | Descripción                              |
+| ------------------------ | ---------------------------------------- |
+| `npm run dev`            | Ejecuta el servidor en modo desarrollo   |
+| `npm start`              | Ejecuta el servidor                      |
+| `npx prisma migrate dev` | Ejecuta migraciones de Prisma            |
+| `npx prisma db seed`     | Población de datos iniciales             |
+| `npx prisma studio`      | Abre Prisma Studio para visualizar la BD |
+ 
 ## Endpoints
-1. Listar productos
-GET /productos?page=1&limit=10&sort=precio,desc
+1. Listar todos los pedidos
+GET /pedidos
 
-2. Obtener producto por ID
-GET /productos/:id
-3. Crear producto
-POST /productos
-4. Actualizar producto
-PUT /productos/:id
-5. Eliminar producto
-DELETE /productos/:id
+Query Params opcionales:
+clienteId → Filtrar por cliente
+estado → Filtrar por estado (pendiente / completado)
+sort → Campo para ordenar (default: fecha)
+order → asc / desc
+page → Página (paginación)
+limit → Cantidad de resultados por página
 
-## Validaciones
-nombre → obligatorio
+## Ejemplos
+GET /pedidos?estado=pendiente&sort=fecha&order=desc&page=1&limit=10
+Pedido por ID:
+GET /pedidos/:id
 
-precio → mayor que 0
-
-stock → mayor o igual a 0
-
-## Ejemplos de Prueba (cURL – AutoZone)
-## Crear producto 
-1. curl -X POST http://localhost:3000/productos -H "Content-Type: application/json" -d "{\"nombre\":\"Batería LTH 12V\",\"precio\":2500,\"stock\":12}"
-2. curl -X POST http://localhost:3000/productos -H "Content-Type: application/json" -d "{\"nombre\":\"Aceite Mobil 5W-30\",\"precio\":550,\"stock\":40}"
-3. curl -X POST http://localhost:3000/productos -H "Content-Type: application/json" -d "{\"nombre\":\"Balatas delanteras Nissan Sentra\",\"precio\":1200,\"stock\":20}"
-4. curl -X POST http://localhost:3000/productos -H "Content-Type: application/json" -d "{\"nombre\":\"Filtro de aire Toyota Corolla\",\"precio\":350,\"stock\":35}"
-5. curl -X POST http://localhost:3000/productos -H "Content-Type: application/json" -d "{\"nombre\":\"Líquido de frenos DOT 4\",\"precio\":180,\"stock\":50}"
-
-## Listar todos los productos
-6. curl http://localhost:3000/productos
-7. curl "http://localhost:3000/productos?page=1&limit=2"
-8. curl http://localhost:3000/productos?sort=precio,asc
-9. curl http://localhost:3000/productos?sort=precio,desc
-
-
-## Obtener producto por ID
-10. curl http://localhost:3000/productos/1
-11. curl http://localhost:3000/productos/999
-
-
-## Actualizar producto
-12. curl -X PUT http://localhost:3000/productos/2 -H "Content-Type: application/json" -d "{\"stock\":60}"
-13. curl -X PUT http://localhost:3000/productos/3 -H "Content-Type: application/json" -d "{\"nombre\":\"Balatas delanteras Chevrolet Aveo\",\"precio\":950}"
-
-## Eliminar producto 
-14. curl -X DELETE http://localhost:3000/productos/4
-15. curl -X DELETE http://localhost:3000/productos/500

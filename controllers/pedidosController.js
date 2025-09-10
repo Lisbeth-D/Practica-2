@@ -19,7 +19,13 @@ export const getPedidos = async (req, res) => {
       include: { cliente: true },
     });
 
-    res.json(pedidos);
+    // Mapear fechas a formato legible
+    const pedidosFormateados = pedidos.map(p => ({
+      ...p,
+      fecha: p.fecha.toLocaleString()  // convierte a fecha y hora local legible
+    }));
+
+    res.json(pedidosFormateados);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error al obtener pedidos" });
@@ -40,7 +46,13 @@ export const getPedidoById = async (req, res) => {
       return res.status(404).json({ message: "Pedido no encontrado" });
     }
 
-    res.json(pedido);
+    // Formatear fecha
+    const pedidoFormateado = {
+      ...pedido,
+      fecha: pedido.fecha.toLocaleString()
+    };
+
+    res.json(pedidoFormateado);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error al obtener pedido" });
