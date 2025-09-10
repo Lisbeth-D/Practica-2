@@ -1,6 +1,6 @@
 # API REST – CRUD de Productos (AutoZone)
 
-## 📄 Descripción
+## Descripción
 Este proyecto implementa una **API REST** en **Node.js + Express** para gestionar productos de **AutoZone**.  
 Incluye:
 
